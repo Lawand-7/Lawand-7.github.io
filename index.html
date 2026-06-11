@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LAWAND — Portfolio</title>
+<meta name="description" content="Lawand — Developer & Creator. Luxury 3D portfolio." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cairo:wght@300;400;700&family=Inter:wght@200;300;400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-light: #f4d97c;
+    --bg: #050507;
+    --text-dim: rgba(255, 255, 255, 0.55);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  body { font-family: 'Inter', 'Cairo', sans-serif; color: #fff; }
+
+  #scene { position: fixed; inset: 0; display: block; }
+
+  /* ---------- Loader ---------- */
+  #loader {
+    position: fixed; inset: 0; z-index: 50;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 28px;
+    transition: opacity 1.2s ease, visibility 1.2s;
+  }
+  #loader.done { opacity: 0; visibility: hidden; }
+  .loader-mark {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 64px;
+    background: linear-gradient(135deg, #8a6d1f, var(--gold) 40%, #fff7d6 50%, var(--gold) 60%, #8a6d1f);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 2.2s linear infinite;
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+  .loader-bar {
+    width: 220px; height: 1px; background: rgba(255,255,255,.12); overflow: hidden; position: relative;
+  }
+  .loader-bar::after {
+    content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: sweep 1.4s ease-in-out infinite;
+  }
+  @keyframes sweep { to { transform: translateX(100%); } }
+
+  /* ---------- Overlay UI ---------- */
+  .ui { position: fixed; z-index: 10; pointer-events: none; }
+  .ui a, .ui .btn { pointer-events: auto; }
+
+  header.ui {
+    top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 42px;
+    animation: fadeDown 1.4s .4s ease both;
+  }
+  .logo {
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 22px; letter-spacing: 6px;
+    color: var(--gold); text-decoration: none;
+  }
+  nav { display: flex; gap: 34px; }
+  nav a {
+    color: var(--text-dim); text-decoration: none; font-size: 12px;
+    letter-spacing: 3px; text-transform: uppercase; font-weight: 300;
+    transition: color .3s;
+  }
+  nav a:hover { color: var(--gold-light); }
+
+  .hero-sub {
+    left: 0; right: 0; bottom: 13vh;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+    text-align: center;
+    animation: fadeUp 1.6s 1s ease both;
+  }
+  .hero-line {
+    display: flex; align-items: center; gap: 16px;
+    color: var(--text-dim); font-weight: 200; font-size: 14px; letter-spacing: 7px; text-transform: uppercase;
+  }
+  .hero-line::before, .hero-line::after {
+    content: ''; width: 56px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .hero-line::after { background: linear-gradient(90deg, var(--gold), transparent); }
+  .hero-ar {
+    font-family: 'Cairo', sans-serif; font-weight: 300; font-size: 15px;
+    color: rgba(244, 217, 124, 0.75); letter-spacing: 1px;
+  }
+  .cta-row { display: flex; gap: 18px; margin-top: 10px; }
+  .btn {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase; text-decoration: none;
+    padding: 13px 34px; border: 1px solid rgba(212, 175, 55, 0.45); color: var(--gold-light);
+    background: rgba(212, 175, 55, 0.05);
+    backdrop-filter: blur(6px);
+    transition: all .4s ease;
+  }
+  .btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 40px rgba(212,175,55,.45); }
+  .btn.solid { background: var(--gold); color: #000; border-color: var(--gold); }
+  .btn.solid:hover { background: var(--gold-light); box-shadow: 0 0 60px rgba(212,175,55,.6); }
+
+  footer.ui {
+    bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 42px;
+    font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,.3); text-transform: uppercase;
+    animation: fadeUp 1.6s 1.4s ease both;
+  }
+  .scroll-hint { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .2; transform: scale(.7); } }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+  /* vignette + grain for cinematic depth */
+  .vignette {
+    position: fixed; inset: 0; z-index: 5; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.55) 100%);
+  }
+
+  /* DOM fallback title (shown only if WebGL fails) */
+  #fallback-title {
+    position: fixed; inset: 0; z-index: 4; display: none;
+    align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: clamp(48px, 12vw, 160px);
+    letter-spacing: .08em;
+    background: linear-gradient(135deg, #8a6d1f, var(--gold) 40%, #fff7d6 50%, var(--gold) 60%, #8a6d1f);
+    background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 3s linear infinite;
+  }
+
+  @media (max-width: 640px) {
+    header.ui { padding: 20px 22px; }
+    nav { display: none; }
+    .hero-sub { bottom: 10vh; padding: 0 16px; }
+    .hero-line { font-size: 11px; letter-spacing: 4px; }
+    footer.ui { padding: 16px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-mark">L</div>
+  <div class="loader-bar"></div>
+</div>
+
+<canvas id="scene"></canvas>
+<div class="vignette"></div>
+<div id="fallback-title">LAWAND</div>
+
+<header class="ui">
+  <a class="logo" href="#">LAWAND</a>
+  <nav>
+    <a href="https://github.com/Lawand-7" target="_blank" rel="noopener">Work</a>
+    <a href="https://github.com/Lawand-7?tab=repositories" target="_blank" rel="noopener">Projects</a>
+    <a href="https://github.com/Lawand-7" target="_blank" rel="noopener">Contact</a>
+  </nav>
+</header>
+
+<div class="ui hero-sub">
+  <div class="hero-line">Developer&nbsp;&nbsp;·&nbsp;&nbsp;Creator&nbsp;&nbsp;·&nbsp;&nbsp;Visionary</div>
+  <div class="hero-ar">حيث تلتقي الفخامة بالإبداع</div>
+  <div class="cta-row">
+    <a class="btn solid" href="https://github.com/Lawand-7" target="_blank" rel="noopener">Explore Work</a>
+    <a class="btn" href="https://github.com/Lawand-7" target="_blank" rel="noopener">Get in Touch</a>
+  </div>
+</div>
+
+<footer class="ui">
+  <span>© 2026 Lawand — All rights reserved</span>
+  <span class="scroll-hint"><span class="dot"></span> Move your cursor</span>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const canvas = document.getElementById('scene');
+const loaderEl = document.getElementById('loader');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+} catch (e) {
+  // WebGL unavailable — show DOM fallback
+  document.getElementById('fallback-title').style.display = 'flex';
+  loaderEl.classList.add('done');
+  throw e;
+}
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050507);
+scene.fog = new THREE.FogExp2(0x050507, 0.028);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(0, 0.6, 16);
+
+// Reflective environment so the gold actually gleams
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+// ---------- Lights ----------
+const keyLight = new THREE.DirectionalLight(0xfff2cf, 2.2);
+keyLight.position.set(6, 8, 8);
+scene.add(keyLight);
+
+const rimLight = new THREE.DirectionalLight(0xd4af37, 1.6);
+rimLight.position.set(-8, 3, -6);
+scene.add(rimLight);
+
+const fillLight = new THREE.PointLight(0x4466ff, 8, 40);
+fillLight.position.set(0, -6, 6);
+scene.add(fillLight);
+
+scene.add(new THREE.AmbientLight(0x1a1a22, 1.5));
+
+// ---------- Gold material ----------
+const goldMat = new THREE.MeshStandardMaterial({
+  color: 0xd4af37,
+  metalness: 1.0,
+  roughness: 0.22,
+  envMapIntensity: 1.4,
+});
+
+// ---------- 3D Name ----------
+const textGroup = new THREE.Group();
+scene.add(textGroup);
+
+const fontLoader = new FontLoader();
+fontLoader.load(
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json',
+  (font) => {
+    const isMobile = innerWidth < 640;
+    const size = isMobile ? 1.15 : 2.1;
+    const geo = new TextGeometry('LAWAND', {
+      font,
+      size,
+      height: size * 0.34,
+      curveSegments: 14,
+      bevelEnabled: true,
+      bevelThickness: size * 0.045,
+      bevelSize: size * 0.035,
+      bevelSegments: 6,
+    });
+    geo.center();
+    const mesh = new THREE.Mesh(geo, goldMat);
+    textGroup.add(mesh);
+
+    // Mirror reflection beneath the name
+    const mirror = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      color: 0xd4af37, metalness: 1, roughness: 0.4,
+      transparent: true, opacity: 0.16, envMapIntensity: 0.8,
+    }));
+    mirror.scale.y = -1;
+    mirror.position.y = -(size * 1.55);
+    textGroup.add(mirror);
+
+    loaderEl.classList.add('done');
+  },
+  undefined,
+  () => { // font failed — DOM fallback title instead of 3D text
+    document.getElementById('fallback-title').style.display = 'flex';
+    loaderEl.classList.add('done');
+  }
+);
+
+// ---------- Orbiting golden rings ----------
+const rings = new THREE.Group();
+for (let i = 0; i < 3; i++) {
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(5.4 + i * 1.5, 0.012, 8, 220),
+    new THREE.MeshStandardMaterial({
+      color: 0xd4af37, metalness: 1, roughness: 0.3,
+      transparent: true, opacity: 0.5 - i * 0.12, envMapIntensity: 1.2,
+    })
+  );
+  ring.rotation.x = Math.PI / 2.4 + i * 0.22;
+  ring.rotation.y = i * 0.5;
+  rings.add(ring);
+}
+scene.add(rings);
+
+// ---------- Gold dust particles ----------
+function makeParticles(count, spread, sizePx, color, opacity) {
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    pos[i * 3] = (Math.random() - 0.5) * spread;
+    pos[i * 3 + 1] = (Math.random() - 0.5) * spread * 0.7;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * spread;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const m = new THREE.PointsMaterial({
+    color, size: sizePx, sizeAttenuation: true,
+    transparent: true, opacity, depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  return new THREE.Points(g, m);
+}
+const dust = makeParticles(900, 46, 0.05, 0xf4d97c, 0.85);
+const stars = makeParticles(1400, 90, 0.03, 0x8899ff, 0.5);
+scene.add(dust, stars);
+
+// ---------- Floor grid (subtle, futuristic) ----------
+const grid = new THREE.GridHelper(120, 80, 0x33301a, 0x14130c);
+grid.position.y = -5.2;
+scene.add(grid);
+
+// ---------- Postprocessing: bloom ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.85, 0.82);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- Interaction ----------
+const mouse = { x: 0, y: 0 };
+addEventListener('pointermove', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = (e.clientY / innerHeight) * 2 - 1;
+});
+addEventListener('deviceorientation', (e) => {
+  if (e.gamma !== null) {
+    mouse.x = THREE.MathUtils.clamp(e.gamma / 30, -1, 1);
+    mouse.y = THREE.MathUtils.clamp((e.beta - 45) / 30, -1, 1);
+  }
+});
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+// ---------- Animate ----------
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  // gentle floating + breathing of the name
+  textGroup.rotation.y = Math.sin(t * 0.35) * 0.22 + mouse.x * 0.28;
+  textGroup.rotation.x = Math.sin(t * 0.25) * 0.05 + mouse.y * 0.12;
+  textGroup.position.y = Math.sin(t * 0.8) * 0.18 + 0.4;
+
+  rings.rotation.y = t * 0.12;
+  rings.rotation.z = Math.sin(t * 0.2) * 0.1;
+
+  dust.rotation.y = t * 0.02;
+  dust.rotation.x = Math.sin(t * 0.1) * 0.04;
+  stars.rotation.y = -t * 0.008;
+
+  // camera parallax
+  camera.position.x += (mouse.x * 2.2 - camera.position.x) * 0.04;
+  camera.position.y += (-mouse.y * 1.4 + 0.6 - camera.position.y) * 0.04;
+  camera.lookAt(0, 0.3, 0);
+
+  fillLight.intensity = 7 + Math.sin(t * 1.4) * 2;
+
+  composer.render();
+}
+animate();
+</script>
+</body>
+</html>
