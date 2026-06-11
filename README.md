@@ -1,21 +1,24 @@
-# LAWAND — 3D Portfolio
+# LAWAND — Solar System
 
-Luxury animated 3D personal website built with [Three.js](https://threejs.org/).
+A luxurious interactive 3D solar system set in the Milky Way, built with [Three.js](https://threejs.org/).
 
 **Live:** https://lawand-7.github.io/
 
 ## Features
 
-- 3D extruded gold name with real-time reflections (PBR + RoomEnvironment)
+- Glowing sun with additive bloom and animated corona
+- All 8 planets with procedural surface textures, real orbital motion & spin
+- Saturn's ring and Earth's orbiting moon
+- Thousands of stars in a flattened galaxy disk (Milky Way band)
 - Cinematic bloom post-processing
-- Golden dust particles & orbiting rings
-- Mouse / gyroscope parallax
-- Bilingual (English / العربية) overlay UI
+- Orbit controls — drag to rotate, scroll to zoom, hover a planet to see its name
+- Auto-rotating cinematic camera
 - Zero build step — a single `index.html`, modules loaded from CDN
+- Procedural textures only — no external image files
 
 ## Run locally
 
-Just open `index.html` in a browser, or serve it:
+Open `index.html` in a browser, or serve it:
 
 ```bash
 npx serve .
