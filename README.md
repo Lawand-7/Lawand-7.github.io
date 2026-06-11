@@ -8,11 +8,13 @@ A luxurious interactive 3D solar system set in the Milky Way, built with [Three.
 
 - Glowing sun with additive bloom and animated corona
 - All 8 planets with procedural surface textures, real orbital motion & spin
-- Saturn's ring and Earth's orbiting moon
+- Saturn's & Uranus' rings, and Earth's orbiting moon
+- **Click a planet** → the camera flies to it and follows it, with a bilingual (EN / عربي) info card (diameter, distance, moons, year)
+- **Asteroid belt** of 700 drifting rocks between Mars and Jupiter
+- **Colored nebula clouds** in the deep background
 - Thousands of stars in a flattened galaxy disk (Milky Way band)
 - Cinematic bloom post-processing
-- Orbit controls — drag to rotate, scroll to zoom, hover a planet to see its name
-- Auto-rotating cinematic camera
+- Orbit controls — drag to rotate, scroll to zoom, hover to see a planet's name
 - Zero build step — a single `index.html`, modules loaded from CDN
 - Procedural textures only — no external image files
 
