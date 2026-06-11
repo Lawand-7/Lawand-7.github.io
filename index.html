@@ -89,11 +89,42 @@
 
   #fallback { position: fixed; inset: 0; z-index: 4; display: none; align-items: center; justify-content: center; text-align: center; padding: 24px; font-family: 'Cinzel', serif; font-size: clamp(20px, 5vw, 40px); color: var(--gold-light); }
 
+  /* sound toggle */
+  #sound { position: fixed; z-index: 21; bottom: 64px; right: 42px; width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid rgba(212,175,55,.4); background: rgba(5,6,15,.6); backdrop-filter: blur(8px); color: var(--gold-light);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .3s; pointer-events: auto; }
+  #sound:hover { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 0 30px rgba(212,175,55,.4); }
+  #sound svg { width: 20px; height: 20px; }
+
+  /* About panel (Earth) */
+  #about { position: fixed; z-index: 22; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: rgba(2,3,10,.55); backdrop-filter: blur(6px); opacity: 0; visibility: hidden; transition: opacity .5s; }
+  #about.show { opacity: 1; visibility: visible; }
+  .about-card { position: relative; width: min(560px, 92vw); padding: 46px 44px;
+    background: linear-gradient(160deg, rgba(16,14,26,.95), rgba(6,6,12,.95)); border: 1px solid rgba(212,175,55,.35);
+    border-radius: 18px; box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 80px rgba(212,175,55,.1);
+    transform: translateY(30px) scale(.97); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  #about.show .about-card { transform: none; }
+  .about-card .close { position: absolute; top: 16px; right: 18px; width: 30px; height: 30px; border: 1px solid rgba(255,255,255,.18); background: transparent; color: #fff; border-radius: 50%; cursor: pointer; font-size: 15px; transition: all .3s; }
+  .about-card .close:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+  .about-card .eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .about-card h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: 38px; letter-spacing: 4px; color: #fff; }
+  .about-card .role { font-family: 'Cairo', sans-serif; color: var(--gold-light); font-size: 17px; margin: 4px 0 18px; }
+  .about-card p { color: rgba(255,255,255,.7); font-weight: 300; line-height: 1.8; font-size: 14px; margin-bottom: 20px; }
+  .about-card .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .about-card .skill { font-size: 11px; letter-spacing: 1px; padding: 6px 14px; border: 1px solid rgba(212,175,55,.3); border-radius: 30px; color: var(--gold-light); }
+  .about-card .links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .about-card .links a { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; padding: 12px 26px; border: 1px solid rgba(212,175,55,.45); color: var(--gold-light); transition: all .35s; border-radius: 4px; }
+  .about-card .links a.solid { background: var(--gold); color: #000; border-color: var(--gold); }
+  .about-card .links a:hover { background: var(--gold-light); color: #000; box-shadow: 0 0 40px rgba(212,175,55,.4); }
+
   @media (max-width: 640px) {
     header.ui { padding: 20px 22px; } nav { display: none; }
     .hero-sub { bottom: 9vh; padding: 0 16px; } footer.ui { padding: 16px 20px; font-size: 9px; }
     #info { right: 50%; transform: translate(50%, 40px); bottom: 16px; top: auto; width: 88vw; }
     #info.show { transform: translate(50%, 0); }
+    #sound { right: 50%; transform: translateX(50%); bottom: 84px; }
+    .about-card { padding: 38px 26px; } .about-card h2 { font-size: 30px; }
   }
 </style>
 </head>
@@ -135,6 +166,31 @@
     <div class="row"><span class="k">Distance · البُعد</span><span class="v" id="infoDist">—</span></div>
     <div class="row"><span class="k">Moons · الأقمار</span><span class="v" id="infoMoons">—</span></div>
     <div class="row"><span class="k">Year · السنة</span><span class="v" id="infoYear">—</span></div>
+  </div>
+</div>
+
+<button id="sound" class="ui" aria-label="toggle sound" title="Sound / الصوت">
+  <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 9v6h4l5 4V5L7 9H3z"/><line x1="16" y1="9" x2="22" y2="15" class="muteX" style="display:none"/><line x1="22" y1="9" x2="16" y2="15" class="muteX" style="display:none"/>
+    <path class="wave" d="M16 8a5 5 0 0 1 0 8"/><path class="wave" d="M18.5 5.5a9 9 0 0 1 0 13"/>
+  </svg>
+</button>
+
+<div id="about">
+  <div class="about-card">
+    <button class="close" id="aboutClose" aria-label="close">✕</button>
+    <div class="eyebrow">Planet Earth · كوكب الأرض</div>
+    <h2>LAWAND</h2>
+    <div class="role">مطوّر ومبدع — Developer & Creator</div>
+    <p>أهلاً بك في عالمي. أبني تجارب رقمية تجمع بين الأداء القوي والتصميم الفخم — من تطبيقات الويب الحديثة إلى المشاهد ثلاثية الأبعاد التفاعلية. كوكب الأرض هنا هو موطني الرقمي.</p>
+    <div class="skills">
+      <span class="skill">Next.js</span><span class="skill">React</span><span class="skill">Three.js</span>
+      <span class="skill">TypeScript</span><span class="skill">Node.js</span><span class="skill">UI / UX</span><span class="skill">3D / WebGL</span>
+    </div>
+    <div class="links">
+      <a class="solid" href="https://github.com/Lawand-7" target="_blank" rel="noopener">View GitHub</a>
+      <a href="https://github.com/Lawand-7?tab=repositories" target="_blank" rel="noopener">My Projects</a>
+    </div>
   </div>
 </div>
 
@@ -306,6 +362,24 @@ for (let i = 0; i < beltCount; i++) {
 }
 scene.add(belt);
 
+// ---------- Comet (crosses the scene periodically) ----------
+const comet = new THREE.Group();
+const cometHead = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTex([[0,'rgba(255,255,255,1)'],[0.3,'rgba(190,230,255,0.7)'],[0.6,'rgba(120,170,255,0.25)'],[1,'rgba(0,0,0,0)']]), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+cometHead.scale.set(9, 9, 1);
+const cometTail = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTex([[0,'rgba(180,220,255,0.8)'],[0.5,'rgba(120,170,255,0.18)'],[1,'rgba(0,0,0,0)']]), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+comet.add(cometHead, cometTail);
+comet.visible = false;
+scene.add(comet);
+let cometT = 0, cometActive = false, cometWait = 4;
+const cometStart = new THREE.Vector3(), cometEnd = new THREE.Vector3(), cometPos = new THREE.Vector3();
+function launchComet() {
+  const ang = Math.random() * Math.PI * 2, ang2 = ang + Math.PI + (Math.random() - 0.5);
+  const R = 320;
+  cometStart.set(Math.cos(ang) * R, (Math.random() - 0.5) * 120, Math.sin(ang) * R);
+  cometEnd.set(Math.cos(ang2) * R, (Math.random() - 0.5) * 120, Math.sin(ang2) * R);
+  cometT = 0; cometActive = true;
+}
+
 // ---------- Bloom ----------
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -330,6 +404,7 @@ function showInfo(u) {
   document.getElementById('infoSwatch').style.background = u.swatch;
   infoEl.classList.add('show');
 }
+const aboutEl = document.getElementById('about');
 function focusPlanet(mesh) {
   focused = mesh; flying = true;
   controls.autoRotate = false;
@@ -337,14 +412,46 @@ function focusPlanet(mesh) {
   camOffset.set(r * 4.5, r * 2.2, r * 5.5); // viewing offset relative to planet
   showInfo(mesh.userData);
   heroEl.style.opacity = '0';
+  if (mesh.userData.name === 'Earth') aboutEl.classList.add('show'); // home planet → personal section
 }
 function clearFocus() {
   focused = null; flying = false;
   controls.autoRotate = true;
   infoEl.classList.remove('show');
+  aboutEl.classList.remove('show');
   heroEl.style.opacity = '1';
 }
 document.getElementById('infoClose').addEventListener('click', clearFocus);
+document.getElementById('aboutClose').addEventListener('click', (e) => { e.stopPropagation(); aboutEl.classList.remove('show'); });
+
+// ---------- Ambient space audio (procedural, no files) ----------
+let audioCtx = null, masterGain = null, soundOn = false;
+const soundBtn = document.getElementById('sound');
+function buildAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain(); masterGain.gain.value = 0; masterGain.connect(audioCtx.destination);
+  // layered low drone + slow shimmer
+  const freqs = [55, 82.4, 110, 164.8];
+  freqs.forEach((f, i) => {
+    const o = audioCtx.createOscillator(); o.type = i % 2 ? 'sine' : 'triangle'; o.frequency.value = f;
+    const g = audioCtx.createGain(); g.gain.value = 0.12 / (i + 1);
+    const lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.05 + i * 0.03;
+    const lfoG = audioCtx.createGain(); lfoG.gain.value = 0.05;
+    lfo.connect(lfoG); lfoG.connect(g.gain);
+    o.connect(g); g.connect(masterGain); o.start(); lfo.start();
+  });
+}
+function toggleSound() {
+  if (!audioCtx) buildAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  soundOn = !soundOn;
+  masterGain.gain.setTargetAtTime(soundOn ? 0.5 : 0, audioCtx.currentTime, 0.4);
+  soundBtn.querySelectorAll('.wave').forEach(w => w.style.display = soundOn ? '' : 'none');
+  soundBtn.querySelectorAll('.muteX').forEach(w => w.style.display = soundOn ? 'none' : '');
+}
+soundBtn.addEventListener('click', toggleSound);
+soundBtn.querySelectorAll('.wave').forEach(w => w.style.display = 'none');
+soundBtn.querySelectorAll('.muteX').forEach(w => w.style.display = '');
 
 addEventListener('pointermove', (e) => {
   ndc.x = (e.clientX/innerWidth)*2 - 1; ndc.y = -(e.clientY/innerHeight)*2 + 1;
@@ -401,6 +508,28 @@ function animate() {
 
   stars1.rotation.y += dt * 0.005; stars2.rotation.y -= dt * 0.003; band.rotation.y += dt * 0.004;
   nebulae.rotation.y += dt * 0.002;
+
+  // comet
+  if (cometActive) {
+    cometT += dt * 0.06;
+    if (cometT >= 1) { cometActive = false; cometWait = 6 + Math.random() * 8; comet.visible = false; }
+    else {
+      comet.visible = true;
+      cometPos.lerpVectors(cometStart, cometEnd, cometT);
+      const arc = Math.sin(cometT * Math.PI) * 60; cometPos.y += arc; // gentle arc
+      comet.position.copy(cometPos);
+      const fade = Math.sin(cometT * Math.PI);
+      cometHead.material.opacity = fade;
+      cometTail.material.opacity = fade * 0.8;
+      // tail points away from the sun
+      tmp.copy(cometPos).normalize();
+      cometTail.position.copy(tmp).multiplyScalar(14);
+      cometTail.scale.set(26, 26, 1);
+    }
+  } else {
+    cometWait -= dt;
+    if (cometWait <= 0) launchComet();
+  }
 
   // follow focused planet (it keeps orbiting)
   if (focused) {

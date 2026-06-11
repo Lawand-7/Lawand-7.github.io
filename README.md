@@ -12,6 +12,9 @@ A luxurious interactive 3D solar system set in the Milky Way, built with [Three.
 - **Click a planet** → the camera flies to it and follows it, with a bilingual (EN / عربي) info card (diameter, distance, moons, year)
 - **Asteroid belt** of 700 drifting rocks between Mars and Jupiter
 - **Colored nebula clouds** in the deep background
+- **A comet** that periodically streaks across the system with a glowing tail
+- **Ambient space audio** — procedural drone with a mute/unmute button (no audio files)
+- **Click Earth** to open a personal "About Lawand" section with skills & links
 - Thousands of stars in a flattened galaxy disk (Milky Way band)
 - Cinematic bloom post-processing
 - Orbit controls — drag to rotate, scroll to zoom, hover to see a planet's name
